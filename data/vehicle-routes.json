@@ -1,0 +1,114 @@
+[
+  {
+    "id": "1955-chevrolet-bel-air",
+    "title": "1955 Chevrolet Bel Air",
+    "stock": "B37161",
+    "price": 49950,
+    "path": "/cars/1955-chevrolet-bel-air/"
+  },
+  {
+    "id": "1957-ford-thunderbird",
+    "title": "1957 Ford Thunderbird",
+    "stock": "B37107",
+    "price": 24450,
+    "path": "/cars/1957-ford-thunderbird/"
+  },
+  {
+    "id": "1957-ford-thunderbird-b37104",
+    "title": "1957 Ford Thunderbird",
+    "stock": "B37104",
+    "price": 39750,
+    "path": "/cars/1957-ford-thunderbird-b37104/"
+  },
+  {
+    "id": "1961-chevrolet-corvette",
+    "title": "1961 Chevrolet Corvette",
+    "stock": "37105",
+    "price": 49950,
+    "path": "/cars/1961-chevrolet-corvette/"
+  },
+  {
+    "id": "1965-pontiac-gto",
+    "title": "1965 Pontiac GTO",
+    "stock": "37109",
+    "price": 35000,
+    "path": "/cars/1965-pontiac-gto/"
+  },
+  {
+    "id": "1966-chevrolet-corvette",
+    "title": "1966 Chevrolet Corvette",
+    "stock": "B37158",
+    "price": 69000,
+    "path": "/cars/1966-chevrolet-corvette/"
+  },
+  {
+    "id": "1966-porsche-911",
+    "title": "1966 Porsche 911",
+    "stock": "B37151",
+    "price": 94950,
+    "path": "/cars/1966-porsche-911/"
+  },
+  {
+    "id": "1967-pontiac-gto",
+    "title": "1967 Pontiac GTO",
+    "stock": "B37142",
+    "price": 35000,
+    "path": "/cars/1967-pontiac-gto/"
+  },
+  {
+    "id": "1968-ford-mustang",
+    "title": "1968 Ford Mustang",
+    "stock": "B37133",
+    "price": 29000,
+    "path": "/cars/1968-ford-mustang/"
+  },
+  {
+    "id": "1969-chevrolet-c10",
+    "title": "1969 Chevrolet C10",
+    "stock": "A01599",
+    "price": 24000,
+    "path": "/cars/1969-chevrolet-c10/"
+  },
+  {
+    "id": "1970-buick-gs",
+    "title": "1970 Buick GS",
+    "stock": "37139",
+    "price": 30000,
+    "path": "/cars/1970-buick-gs/"
+  },
+  {
+    "id": "1970-chevrolet-chevelle-ss",
+    "title": "1970 Chevrolet Chevelle SS",
+    "stock": "B37126",
+    "price": 59950,
+    "path": "/cars/1970-chevrolet-chevelle-ss/"
+  },
+  {
+    "id": "1970-dodge-coronet",
+    "title": "1970 Dodge Coronet",
+    "stock": "B37141",
+    "price": 29950,
+    "path": "/cars/1970-dodge-coronet/"
+  },
+  {
+    "id": "1970-plymouth-road-runner",
+    "title": "1970 Plymouth Road Runner",
+    "stock": "B37120",
+    "price": 41000,
+    "path": "/cars/1970-plymouth-road-runner/"
+  },
+  {
+    "id": "1970-shelby-gt-500",
+    "title": "1970 Shelby GT 500",
+    "stock": "B37156",
+    "price": 124950,
+    "path": "/cars/1970-shelby-gt-500/"
+  },
+  {
+    "id": "1972-ford-mustang",
+    "title": "1972 Ford Mustang",
+    "stock": "B37138",
+    "price": 18750,
+    "path": "/cars/1972-ford-mustang/"
+  }
+]
