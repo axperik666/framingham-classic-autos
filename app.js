@@ -6,7 +6,6 @@
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
   const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
   let activeVehicle = null;
-  let gallery = null;
   let lastTrackedVehicleId = null;
   let lastDeliveryKey = "";
   let lastDeliveryAt = 0;
@@ -115,7 +114,7 @@
     $("#campaign-proof-price").textContent = `${money.format(vehicle.price)} asking price${vehicle.stock ? ` · Stock ${vehicle.stock}` : ""}`;
     $("#campaign-proof-mood").textContent = vehicle.mood;
     $("#campaign-proof-specs").innerHTML = [["Engine", vehicle.engine], ["Transmission", vehicle.transmission], ["Mileage", vehicle.mileage], ["Body", vehicle.body], ["Exterior", vehicle.exterior], ["Interior", vehicle.interior]].filter(([, value]) => value).map(([label, value]) => `<div><dt>${label}</dt><dd>${value}</dd></div>`).join("");
-    $("#campaign-proof-photos").innerHTML = vehicle.images.slice(0, 3).map((src, index) => `<img src="${src}" alt="${vehicle.title}, listing photo ${index + 1} of ${vehicle.images.length}" width="1200" height="800"${index ? ' loading="lazy"' : ""}>`).join("");
+    $("#campaign-proof-photos").innerHTML = vehicle.images.map((src, index) => `<img src="${src}" alt="${vehicle.title}, listing photo ${index + 1} of ${vehicle.images.length}" width="1200" height="800"${index ? ' loading="lazy"' : ""}>`).join("");
     $("#hero-headline").textContent = `${vehicle.title}. Look it over before you call.`;
     $("#hero-lede").textContent = `${money.format(vehicle.price)} asking price${vehicle.stock ? `, stock ${vehicle.stock}` : ""}. The photos, facts, and inquiry below stay tied to this exact car.`;
     $("#inventory-heading-title").textContent = "Other current classics from Framingham Motors";
@@ -159,36 +158,25 @@
   }
 
   function card(vehicle, index) {
-    return `<article class="car-card ${index === 0 ? "featured" : ""} ${campaignVehicle && campaignVehicle.id === vehicle.id ? "campaign-match" : ""}"><a href="${vehicleHref(vehicle)}" data-vehicle="${vehicle.id}" aria-label="View ${vehicle.title}"><div class="car-image"><img src="${vehicle.images[0]}" alt="${vehicle.title}" loading="lazy" width="1200" height="800"><span class="car-status">${campaignVehicle && campaignVehicle.id === vehicle.id ? "FROM YOUR AD" : "CURRENT LISTING"}</span><span class="car-label">${vehicle.year} / ${vehicle.body}</span></div><div class="car-heading"><h3>${vehicle.title}</h3><p class="car-price">${money.format(vehicle.price)}</p></div><p class="car-spec-line">${vehicle.engine} · ${vehicle.transmission} · ${vehicle.mileage} miles${vehicle.stock ? ` · Stock ${vehicle.stock}` : ""}</p><span class="car-more">See 10 photos of this car <i data-lucide="arrow-up-right" aria-hidden="true"></i></span></a></article>`;
+    return `<article class="car-card ${index === 0 ? "featured" : ""} ${campaignVehicle && campaignVehicle.id === vehicle.id ? "campaign-match" : ""}"><a href="${vehicleHref(vehicle)}" data-vehicle="${vehicle.id}" aria-label="View ${vehicle.title}"><div class="car-image"><img src="${vehicle.images[0]}" alt="${vehicle.title}" loading="lazy" width="1200" height="800"><span class="car-status">${campaignVehicle && campaignVehicle.id === vehicle.id ? "FROM YOUR AD" : "CURRENT LISTING"}</span><span class="car-label">${vehicle.year} / ${vehicle.body}</span></div><div class="car-heading"><h3>${vehicle.title}</h3><p class="car-price">${money.format(vehicle.price)}</p></div><p class="car-spec-line">${vehicle.engine} · ${vehicle.transmission} · ${vehicle.mileage} miles${vehicle.stock ? ` · Stock ${vehicle.stock}` : ""}</p><span class="car-more">Open vehicle page · ${vehicle.images.length} photos <i data-lucide="arrow-up-right" aria-hidden="true"></i></span></a></article>`;
   }
 
   function render() {
     const rows = filteredRows();
     $("#collection-grid").innerHTML = rows.length ? rows.map(card).join("") : `<div class="empty"><h3>No exact match</h3><p>Clear the selection to see the full collection.</p></div>`;
     $("#result-count").textContent = `${rows.length} vehicle${rows.length === 1 ? "" : "s"} shown`;
-    $$('[data-vehicle]', $("#collection-grid")).forEach((link) => link.addEventListener("click", (event) => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return; event.preventDefault(); openVehicle(link.dataset.vehicle); }));
     if (window.lucide) window.lucide.createIcons();
   }
 
-  function openVehicle(id) {
-    activeVehicle = inventory.find((vehicle) => vehicle.id === id);
-    if (!activeVehicle) return;
-    setVehicleUrl(activeVehicle);
-    updateVehicleMetadata(activeVehicle);
-    $("#vehicle-select").value = activeVehicle.id;
-    $("#dialog-stock").textContent = activeVehicle.stock ? `STOCK ${activeVehicle.stock}` : "CURRENT COLLECTION";
-    $("#dialog-title").textContent = activeVehicle.title;
-    $("#dialog-price").textContent = money.format(activeVehicle.price);
-    $("#dialog-mood").textContent = activeVehicle.mood;
-    $("#dialog-specs").innerHTML = [["Engine", activeVehicle.engine], ["Transmission", activeVehicle.transmission], ["Mileage", activeVehicle.mileage], ["Body", activeVehicle.body], ["Exterior", activeVehicle.exterior], ["Interior", activeVehicle.interior]].filter(([, value]) => value).map(([label, value]) => `<div><dt>${label}</dt><dd>${value}</dd></div>`).join("");
-    $("#dialog-gallery").innerHTML = activeVehicle.images.map((image, index) => `<div class="swiper-slide"><img src="${image}" alt="${activeVehicle.title}, view ${index + 1}" width="1200" height="800"></div>`).join("");
-    $("#vehicle-dialog").showModal();
-    if (gallery) gallery.destroy(true, true);
-    if (window.Swiper) gallery = new window.Swiper(".vehicle-swiper", { loop: activeVehicle.images.length > 1, keyboard: { enabled: true }, navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" }, pagination: { el: ".swiper-pagination", clickable: true } });
-    trackVehicleView(activeVehicle);
+  function openVehiclePage(id) {
+    const vehicle = inventory.find((row) => row.id === id);
+    if (!vehicle) return;
+    if (pathVehicleMatch && campaignVehicle && campaignVehicle.id === vehicle.id) {
+      $("#campaign-proof").scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    location.assign(vehicleHref(vehicle));
   }
-
-  function closeDialog() { $("#vehicle-dialog").close(); }
 
   function openInquiry(id = activeVehicle && activeVehicle.id, requestType = "Availability and details") {
     const vehicle = inventory.find((row) => row.id === id) || campaignVehicle || inventory.find((row) => row.id === "1955-chevrolet-bel-air") || inventory[0];
@@ -201,7 +189,6 @@
     $("#request-type").value = requestType;
     $("#inquiry-title").textContent = `Ask about the ${vehicle.title}.`;
     $("#inquiry-context").textContent = `${money.format(vehicle.price)} asking price${vehicle.stock ? ` · Stock ${vehicle.stock}` : ""}. This request will stay tied to that exact vehicle.`;
-    if ($("#vehicle-dialog").open) closeDialog();
     $("#inquiry").scrollIntoView({ behavior: "smooth", block: "start" });
     setTimeout(() => $("#inquiry-form input[name='firstName']").focus(), 450);
   }
@@ -217,6 +204,31 @@
     $("#chat-drawer").removeAttribute("inert"); $("#chat-drawer").classList.add("open"); $(".drawer-scrim").classList.add("open"); $("#chat-drawer").setAttribute("aria-hidden", "false"); setTimeout(() => $("#chat-vehicle-select").focus(), 250);
   }
   function closeChat() { $("#chat-drawer").classList.remove("open"); $(".drawer-scrim").classList.remove("open"); $("#chat-drawer").setAttribute("aria-hidden", "true"); $("#chat-drawer").setAttribute("inert", ""); }
+
+  function newLeadId() {
+    return window.crypto && typeof window.crypto.randomUUID === "function"
+      ? window.crypto.randomUUID()
+      : `lead-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  }
+
+  async function postLeadToRouter(payload) {
+    const requestPayload = { ...payload, leadSource: "LANDING", leadId: payload.leadId || newLeadId(), receivedAt: new Date().toISOString() };
+    const options = { method: "POST", headers: { "Content-Type": "text/plain;charset=UTF-8" }, body: JSON.stringify(requestPayload), redirect: "follow" };
+    try {
+      const response = await fetch(config.leadEndpoint, options);
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok || body.ok === false) {
+        const error = new Error(body.message || "The request could not be sent.");
+        error.routerRejected = true;
+        throw error;
+      }
+      return body;
+    } catch (error) {
+      if (error.routerRejected) throw error;
+      await fetch(config.leadEndpoint, { ...options, mode: "no-cors" });
+      return { ok: true, deliveryConfirmedByBrowser: false };
+    }
+  }
 
   async function deliver(payload, status, successMessage) {
     status.className = "form-status";
@@ -237,9 +249,7 @@
       return false;
     }
     try {
-      const response = await fetch(config.leadEndpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-      const body = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(body.message || "The request could not be sent.");
+      const body = await postLeadToRouter(payload);
       status.classList.add("success");
       status.textContent = body.message || successMessage;
       if (window.fbq) window.fbq("track", "Lead");
@@ -281,19 +291,15 @@
 
   function init() {
     attribution(); setupSectionLinks(); loadMetaPixel(); loadLiveChat(); populateVehicles(); applyCampaignVehicle(); render();
-    $$('[data-vehicle]').filter((button) => !button.closest("#collection-grid")).forEach((button) => button.addEventListener("click", () => openVehicle(button.dataset.vehicle)));
+    $$('[data-vehicle]').filter((button) => !button.closest("#collection-grid")).forEach((button) => button.addEventListener("click", () => openVehiclePage(button.dataset.vehicle)));
     $("#price-filter").addEventListener("change", render);
     $("#clear-filter").addEventListener("click", () => { $("#price-filter").value = "all"; render(); });
     $$('[data-chat-open]').forEach((button) => button.addEventListener("click", openChat));
     $$('[data-hero-request]').forEach((button) => button.addEventListener("click", () => openInquiry((campaignVehicle || inventory.find((row) => row.id === "1955-chevrolet-bel-air") || inventory[0]).id, button.dataset.heroRequest)));
     $$('[data-campaign-request]').forEach((button) => button.addEventListener("click", () => openInquiry(campaignVehicle && campaignVehicle.id, button.dataset.campaignRequest)));
     const campaignGallery = $('[data-campaign-gallery]');
-    if (campaignGallery && campaignVehicle) campaignGallery.addEventListener("click", () => openVehicle(campaignVehicle.id));
+    if (campaignGallery && campaignVehicle) campaignGallery.addEventListener("click", () => $("#campaign-proof-photos").scrollIntoView({ behavior: "smooth", block: "start" }));
     $$('[data-chat-close]').forEach((button) => button.addEventListener("click", closeChat));
-    $$('[data-close-dialog]').forEach((button) => button.addEventListener("click", closeDialog));
-    $("#dialog-inquire").addEventListener("click", () => openInquiry(undefined, "Availability and details"));
-    $("#dialog-video").addEventListener("click", () => openInquiry(undefined, "Personal walk-around video"));
-    $("#vehicle-dialog").addEventListener("click", (event) => { if (event.target === event.currentTarget) closeDialog(); });
     $("#inquiry-form").addEventListener("submit", submitInquiry);
     $("#chat-form").addEventListener("submit", submitChat);
     if (window.IMask) $$("input[type='tel']").forEach((input) => window.IMask(input, { mask: "(000) 000-0000" }));
