@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://framinghaautos.com/sitemap.xml
