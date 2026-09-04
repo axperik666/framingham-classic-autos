@@ -56,7 +56,9 @@
           const payload={type:form.dataset.formKind==='chat'?'chat-question':'vehicle-inquiry',dealerId:data.dealerId,dealerName:data.dealer,landingId:data.dealerId,vehicle:vehicle.title,vehicleSlug:vehicle.id,vehicleStock:vehicle.stock,vehiclePrice:vehicle.price,name:[fields.name,fields.lastName].filter(Boolean).join(' '),firstName:fields.name,lastName:fields.lastName||'',email:fields.email.trim(),phone:fields.phone.trim(),message,requestType:form.elements.request?.selectedOptions[0].textContent||'Question about this vehicle',purchaseMethod:fields.purchaseMethod||'',deliveryNeeded:Boolean(fields.deliveryNeeded),contactConsent:Boolean(fields.contactConsent),website:fields.website||'',leadId:crypto.randomUUID(),pageUrl:location.origin+'/cars/'+vehicle.id+'/',attribution};
           const response=await fetch(data.leadEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.timeout(20000)});const result=await response.json();
           if(!response.ok||result.ok!==true||!Number.isInteger(result.telegramMessageId))throw new Error('Delivery not confirmed');
-          delivered.set(key,Date.now());statusFor(form,'Thank you! Your request has been sent. Please expect a call from the dealer shortly.','success').focus();return;
+          delivered.set(key,Date.now());
+          if(window.fbq)window.fbq('track','Lead',{content_name:vehicle.title,content_ids:[vehicle.id],content_type:'vehicle',vehicle_stock:vehicle.stock||'',value:Number(vehicle.price)||0,currency:'USD',request_type:payload.requestType},{eventID:payload.leadId});
+          statusFor(form,'Thank you! Your request has been sent. Please expect a call from the dealer shortly.','success').focus();return;
         }catch{statusFor(form,'We could not confirm delivery. Your details are still here. Please try again, call either sales line, or email us.','error');}
         finally{delete form.dataset.submitting;button.disabled=false;}
       }else statusFor(form,'Online requests are temporarily unavailable. No request was sent. Please call either sales line or email us.','error');
