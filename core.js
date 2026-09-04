@@ -29,7 +29,7 @@
     return null;
   }
   function inquiryFor(vehicle,fields,attribution,origin){
-    const reason={availability:'Availability inquiry',video:'Walk-around video request',visit:'Visit request',delivery:'Delivery question'}[fields.request]||'Vehicle inquiry';
+    const reason={availability:'Availability inquiry',questions:'Vehicle details question',visit:'Visit request',delivery:'Delivery question'}[fields.request]||'Vehicle inquiry';
     const subject=`${reason}: ${vehicle.title} — ${vehicle.stock||'stock to confirm'}`;
     const price=vehicle.price==null?'Please confirm':new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(vehicle.price);
     const safeAttribution=attributionFor('',attribution,'');
